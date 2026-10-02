@@ -11,7 +11,7 @@ Runs a Trojan-over-WebSocket node on Cloudflare. It serves a bilingual (fa/en) i
 | File | Role |
 | :--- | :--- |
 | `_worker.js` | Obfuscated build. **This is the file to deploy.** |
-| `_worker明.js` | Readable reference build with the same logic. |
+| `_worker-manual.js` | Readable reference build with the same logic. |
 
 ## Usage
 
