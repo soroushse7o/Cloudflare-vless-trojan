@@ -11,8 +11,8 @@ Runs a VLESS-over-WebSocket node on Cloudflare. It also serves a bilingual (fa/e
 | File | Role |
 | :--- | :--- |
 | `_worker.js` | Obfuscated build. **This is the file to deploy.** |
-| `_worker明.js` | Readable reference build with the same logic. Edit this one, then re-obfuscate. |
-| `文件使用说明.txt` | Short bilingual notes and tutorial video links. |
+| `_worker-manual.js` | Readable reference build with the same logic. Edit this one, then re-obfuscate. |
+| `File-notes.txt` | Short bilingual notes and tutorial video links. |
 
 ## Usage
 
