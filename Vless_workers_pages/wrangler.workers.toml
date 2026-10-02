@@ -1,0 +1,10 @@
+# Workers deploy config: npx wrangler deploy -c wrangler.workers.toml
+# پیکربندی دپلوی Workers: npx wrangler deploy -c wrangler.workers.toml
+name = "vless-node"
+main = "_worker-manual.js"
+compatibility_date = "2025-01-01"
+
+# Runtime region: run in the Cloudflare data center closest to Azure Norway East.
+# ریجن اجرا: نزدیک‌ترین دیتاسنتر کلادفلر به Azure Norway East.
+[placement]
+region = "azure:norwayeast"

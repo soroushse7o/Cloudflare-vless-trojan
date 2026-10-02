@@ -10,8 +10,8 @@ Runs a Trojan-over-WebSocket node on Cloudflare. It serves a bilingual (fa/en) i
 
 | File | Role |
 | :--- | :--- |
-| `_worker.js` | Obfuscated build. **This is the file to deploy.** |
-| `_worker-manual.js` | Readable reference build with the same logic. |
+| `_worker.js` | Bilingual (fa/en) build for **Pages**. **This is the file to deploy.** |
+| `_worker-manual.js` | Same bilingual code, used for **Workers**. Keep it identical to `_worker.js`. |
 
 ## Usage
 
@@ -29,9 +29,13 @@ Full table: [main README](../README.md#2-variables-you-can-set-for-cf-trojan-nod
 ## Dependencies
 
 - Cloudflare Workers runtime with `cloudflare:sockets`.
-- Optional for rebuilding: `javascript-obfuscator`.
+- None. Both files are plain readable JavaScript (no obfuscation step).
 
 ## Notes
 
 - The default password `trojan` is shared publicly; set your own.
-- Rebuild example: `javascript-obfuscator "Trojan_workers_pages/_worker明.js" --output Trojan_workers_pages/_worker.js`
+- After editing `_worker-manual.js`, copy it over `_worker.js` so Pages and Workers stay identical.
+
+## Runtime region
+
+`wrangler.workers.toml` sets a Placement Hint (`[placement] region = "azure:norwayeast"`) so the Worker runs in the Cloudflare data center closest to Azure Norway East. Deploy with `npx wrangler deploy -c wrangler.workers.toml`. In the dashboard, set the same under Worker Settings > Placement, if the region option is shown. Change the region value in the file to use another cloud region.

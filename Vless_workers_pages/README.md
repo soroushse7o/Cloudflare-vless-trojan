@@ -10,8 +10,8 @@ Runs a VLESS-over-WebSocket node on Cloudflare. It also serves a bilingual (fa/e
 
 | File | Role |
 | :--- | :--- |
-| `_worker.js` | Obfuscated build. **This is the file to deploy.** |
-| `_worker-manual.js` | Readable reference build with the same logic. Edit this one, then re-obfuscate. |
+| `_worker.js` | Bilingual (fa/en) build for **Pages**. **This is the file to deploy.** |
+| `_worker-manual.js` | Same bilingual code, used for **Workers**. Keep it identical to `_worker.js`. |
 | `File-notes.txt` | Short bilingual notes and tutorial video links. |
 
 ## Usage
@@ -36,11 +36,15 @@ Rules for `ip`/`pt` pairs are documented once in the main README.
 ## Dependencies
 
 - Cloudflare Workers runtime with the `cloudflare:sockets` module.
-- Optional for rebuilding the obfuscated file: `javascript-obfuscator` (Node.js).
+- None. Both files are plain readable JavaScript (no obfuscation step).
 
 ## Notes
 
 - Workers mode needs a custom domain for TLS nodes; Pages mode supports TLS nodes only.
 - The info page switches between Persian (RTL) and English (LTR); browsers with a Persian locale open in Persian.
-- Rebuild example: `javascript-obfuscator "Vless_workers_pages/_worker明.js" --output Vless_workers_pages/_worker.js`
+- After editing `_worker-manual.js`, copy it over `_worker.js` so Pages and Workers stay identical.
 - Keep the default shared `uuid` only for testing; set your own.
+
+## Runtime region
+
+`wrangler.workers.toml` sets a Placement Hint (`[placement] region = "azure:norwayeast"`) so the Worker runs in the Cloudflare data center closest to Azure Norway East. Deploy with `npx wrangler deploy -c wrangler.workers.toml`. In the dashboard, set the same under Worker Settings > Placement, if the region option is shown. Change the region value in the file to use another cloud region.
