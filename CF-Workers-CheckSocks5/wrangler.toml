@@ -1,4 +1,4 @@
-name = "cf-workers-check-socks5"
+name = "square-night-ef7e"
 main = "./_worker.js"
 compatibility_date = "2026-05-01"
 workers_dev = true
