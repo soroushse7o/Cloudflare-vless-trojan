@@ -6,7 +6,7 @@ import { connect } from "cloudflare:sockets";
 // [Windows] Press "Win + R", input cmd and run:  Powershell -NoExit -Command "[guid]::NewGuid()"
 let userID = "86c50e3a-5b87-49dd-bd20-03c7f2735e40";
 
-const proxyIPs = [""];
+const proxyIPs = ["146.103.96.115", "188.253.26.217", "146.103.96.238", "146.103.96.50", "103.137.248.227", "146.103.96.164", "80.240.141.242", "188.226.163.149", "95.85.42.135", "186.190.213.143", "188.166.73.154", "103.137.248.22", "103.137.248.229"];
 const cn_hostnames = [''];
 let CDNIP = 'tiny-waterfall-5581.soroushsevo1.workers.dev'
 // http_ip
