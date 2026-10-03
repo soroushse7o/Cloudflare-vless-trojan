@@ -6,21 +6,21 @@ const proxyIPs = ["146.103.96.115", "188.253.26.217", "146.103.96.238", "146.103
 let cn_hostnames = [''];
 let CDNIP = 'tiny-waterfall-5581.soroushsevo1.workers.dev'
 // http_ip
-let IP1 = 'tiny-waterfall-5581.soroushsevo1.workers.dev'
-let IP2 = 'tiny-waterfall-5581.soroushsevo1.workers.dev'
-let IP3 = 'tiny-waterfall-5581.soroushsevo1.workers.dev'
-let IP4 = 'tiny-waterfall-5581.soroushsevo1.workers.dev'
-let IP5 = 'tiny-waterfall-5581.soroushsevo1.workers.dev'
-let IP6 = 'tiny-waterfall-5581.soroushsevo1.workers.dev'
-let IP7 = 'tiny-waterfall-5581.soroushsevo1.workers.dev'
+let IP1 = '146.103.96.115'
+let IP2 = '188.253.26.217'
+let IP3 = '146.103.96.238'
+let IP4 = '146.103.96.50'
+let IP5 = '103.137.248.227'
+let IP6 = '146.103.96.164'
+let IP7 = '80.240.141.242'
 
 // https_ip
-let IP8 = 'tiny-waterfall-5581.soroushsevo1.workers.dev'
-let IP9 = 'tiny-waterfall-5581.soroushsevo1.workers.dev'
-let IP10 = 'tiny-waterfall-5581.soroushsevo1.workers.dev'
-let IP11 = 'tiny-waterfall-5581.soroushsevo1.workers.dev'
-let IP12 = 'tiny-waterfall-5581.soroushsevo1.workers.dev'
-let IP13 = 'tiny-waterfall-5581.soroushsevo1.workers.dev'
+let IP8 = '188.226.163.149'
+let IP9 = '95.85.42.135'
+let IP10 = '186.190.213.143'
+let IP11 = '188.166.73.154'
+let IP12 = '103.137.248.22'
+let IP13 = '103.137.248.229'
 
 // http_port
 let PT1 = '80'

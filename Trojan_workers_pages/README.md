@@ -42,4 +42,4 @@ Full table: [main README](../README.md#2-variables-you-can-set-for-cf-trojan-nod
 
 ## Default preferred address
 
-All built-in preferred addresses (`CDNIP` and `IP1`-`IP13` at the top of the script) are set to `tiny-waterfall-5581.soroushsevo1.workers.dev`. Override them with the `cdnip` and `ip1`-`ip13` variables, or edit the values in both `_worker.js` and `_worker-manual.js`.
+`CDNIP` defaults to `tiny-waterfall-5581.soroushsevo1.workers.dev`, and `IP1`-`IP13` default to the 13 IP addresses listed at the top of the script. Override them with the `cdnip` and `ip1`-`ip13` variables, or edit the values in both `_worker.js` and `_worker-manual.js`.
