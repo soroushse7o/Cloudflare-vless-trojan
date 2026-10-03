@@ -39,3 +39,7 @@ Full table: [main README](../README.md#2-variables-you-can-set-for-cf-trojan-nod
 ## Runtime region
 
 `wrangler.workers.toml` sets a Placement Hint (`[placement] region = "azure:norwayeast"`) so the Worker runs in the Cloudflare data center closest to Azure Norway East. Deploy with `npx wrangler deploy -c wrangler.workers.toml`. In the dashboard, set the same under Worker Settings > Placement, if the region option is shown. Change the region value in the file to use another cloud region.
+
+## Default preferred address
+
+All built-in preferred addresses (`CDNIP` and `IP1`-`IP13` at the top of the script) are set to `tiny-waterfall-5581.soroushsevo1.workers.dev`. Override them with the `cdnip` and `ip1`-`ip13` variables, or edit the values in both `_worker.js` and `_worker-manual.js`.

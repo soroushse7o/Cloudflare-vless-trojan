@@ -4,23 +4,23 @@ import { connect } from "cloudflare:sockets";
 let Pswd = "trojan";
 const proxyIPs = [""];
 let cn_hostnames = [''];
-let CDNIP = '\u0077\u0077\u0077\u002e\u0076\u0069\u0073\u0061\u002e\u0063\u006f\u006d\u002e\u0073\u0067'
+let CDNIP = 'tiny-waterfall-5581.soroushsevo1.workers.dev'
 // http_ip
-let IP1 = '\u0077\u0077\u0077\u002e\u0076\u0069\u0073\u0061\u002e\u0063\u006f\u006d'
-let IP2 = '\u0063\u0069\u0073\u002e\u0076\u0069\u0073\u0061\u002e\u0063\u006f\u006d'
-let IP3 = '\u0061\u0066\u0072\u0069\u0063\u0061\u002e\u0076\u0069\u0073\u0061\u002e\u0063\u006f\u006d'
-let IP4 = '\u0077\u0077\u0077\u002e\u0076\u0069\u0073\u0061\u002e\u0063\u006f\u006d\u002e\u0073\u0067'
-let IP5 = '\u0077\u0077\u0077\u002e\u0076\u0069\u0073\u0061\u0065\u0075\u0072\u006f\u0070\u0065\u002e\u0061\u0074'
-let IP6 = '\u0077\u0077\u0077\u002e\u0076\u0069\u0073\u0061\u002e\u0063\u006f\u006d\u002e\u006d\u0074'
-let IP7 = '\u0071\u0061\u002e\u0076\u0069\u0073\u0061\u006d\u0069\u0064\u0064\u006c\u0065\u0065\u0061\u0073\u0074\u002e\u0063\u006f\u006d'
+let IP1 = 'tiny-waterfall-5581.soroushsevo1.workers.dev'
+let IP2 = 'tiny-waterfall-5581.soroushsevo1.workers.dev'
+let IP3 = 'tiny-waterfall-5581.soroushsevo1.workers.dev'
+let IP4 = 'tiny-waterfall-5581.soroushsevo1.workers.dev'
+let IP5 = 'tiny-waterfall-5581.soroushsevo1.workers.dev'
+let IP6 = 'tiny-waterfall-5581.soroushsevo1.workers.dev'
+let IP7 = 'tiny-waterfall-5581.soroushsevo1.workers.dev'
 
 // https_ip
-let IP8 = '\u0075\u0073\u0061\u002e\u0076\u0069\u0073\u0061\u002e\u0063\u006f\u006d'
-let IP9 = '\u006d\u0079\u0061\u006e\u006d\u0061\u0072\u002e\u0076\u0069\u0073\u0061\u002e\u0063\u006f\u006d'
-let IP10 = '\u0077\u0077\u0077\u002e\u0076\u0069\u0073\u0061\u002e\u0063\u006f\u006d\u002e\u0074\u0077'
-let IP11 = '\u0077\u0077\u0077\u002e\u0076\u0069\u0073\u0061\u0065\u0075\u0072\u006f\u0070\u0065\u002e\u0063\u0068'
-let IP12 = '\u0077\u0077\u0077\u002e\u0076\u0069\u0073\u0061\u002e\u0063\u006f\u006d\u002e\u0062\u0072'
-let IP13 = '\u0077\u0077\u0077\u002e\u0076\u0069\u0073\u0061\u0073\u006f\u0075\u0074\u0068\u0065\u0061\u0073\u0074\u0065\u0075\u0072\u006f\u0070\u0065\u002e\u0063\u006f\u006d'
+let IP8 = 'tiny-waterfall-5581.soroushsevo1.workers.dev'
+let IP9 = 'tiny-waterfall-5581.soroushsevo1.workers.dev'
+let IP10 = 'tiny-waterfall-5581.soroushsevo1.workers.dev'
+let IP11 = 'tiny-waterfall-5581.soroushsevo1.workers.dev'
+let IP12 = 'tiny-waterfall-5581.soroushsevo1.workers.dev'
+let IP13 = 'tiny-waterfall-5581.soroushsevo1.workers.dev'
 
 // http_port
 let PT1 = '80'
