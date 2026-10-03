@@ -2,7 +2,12 @@
 
 # CF-Workers-CheckSocks5
 
-![demo](./demo.png)
+![demo]
+<p align="center">
+  <a href="https://square-night-ef7e.cfpanel-se7o.workers.dev/" target="_blank">
+    <img src="https://img.shields.io/badge/Live%20Demo-Online-brightgreen?style=for-the-badge" alt="Live Demo">
+  </a>
+</p>
 
 ابزاری مبتنی بر Cloudflare Workers برای بررسی دسترس‌پذیری پروکسی. هسته‌ی پروژه یک فایل `_worker.js` است و از بررسی پروکسی‌های SOCKS5، HTTP، HTTPS، TURN و SSTP پشتیبانی می‌کند. رابط وب امکان بررسی تکی و دسته‌ای، تحلیل (resolve) دامنه، نمایش اطلاعات IP خروجی، نمایش موقعیت روی نقشه، فیلتر کردن نتایج و برون‌بری آن‌ها را فراهم می‌کند.
 
@@ -24,7 +29,8 @@
 
 ## نمونه‌ی آنلاین
 
-Demo: <https://check.socks5.cmliussss.net>
+Demo:
+[**مشاهده دموی زنده**](https://square-night-ef7e.cfpanel-se7o.workers.dev/)
 
 ## استقرار
 
