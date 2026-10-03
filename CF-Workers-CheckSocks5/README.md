@@ -2,7 +2,6 @@
 
 # CF-Workers-CheckSocks5
 
-![demo]
 <p align="center">
   <a href="https://square-night-ef7e.cfpanel-se7o.workers.dev/" target="_blank">
     <img src="https://img.shields.io/badge/Live%20Demo-Online-brightgreen?style=for-the-badge" alt="Live Demo">
