@@ -2,7 +2,11 @@
 
 # CF-Workers-CheckSocks5
 
-![demo](./demo.png)
+<p align="center">
+  <a href="https://square-night-ef7e.cfpanel-se7o.workers.dev/" target="_blank">
+    <img src="https://img.shields.io/badge/Live%20Demo-Online-brightgreen?style=for-the-badge" alt="Live Demo">
+  </a>
+</p>
 
 A proxy availability checker built on Cloudflare Workers. The project runs from a single `_worker.js` and supports SOCKS5, HTTP, HTTPS, TURN and SSTP proxy checks, with single and batch checking in the web UI, domain resolution, exit IP information, map display, result filtering and export.
 
@@ -24,7 +28,7 @@ A proxy availability checker built on Cloudflare Workers. The project runs from 
 
 ## Live demo
 
-Demo: <https://check.socks5.cmliussss.net>
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Online-brightgreen?style=for-the-badge)](https://square-night-ef7e.cfpanel-se7o.workers.dev/)
 
 ## Deployment
 
