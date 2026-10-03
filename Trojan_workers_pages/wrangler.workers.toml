@@ -4,7 +4,7 @@ name = "trojan-node"
 main = "_worker-manual.js"
 compatibility_date = "2025-01-01"
 
-# Runtime region: run in the Cloudflare data center closest to Azure Norway East.
-# ریجن اجرا: نزدیک‌ترین دیتاسنتر کلادفلر به Azure Norway East.
+# Runtime region: run in the Cloudflare data center closest to Azure West Europe.
+# ریجن اجرا: نزدیک‌ترین دیتاسنتر کلادفلر به Azure West Europe.
 [placement]
-region = "azure:norwayeast"
+region = "azure:westeurope"
