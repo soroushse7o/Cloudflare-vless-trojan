@@ -31,6 +31,26 @@ const SOURCES = {
 // ریجن اجرای Worker/Pages (Placement Hint): نزدیک‌ترین دیتاسنتر کلادفلر به این ریجن. برای غیرفعال‌سازی خالی بگذارید.
 const PLACEMENT_REGION = "azure:westeurope";
 
+// Extra variables injected into the uploaded project: Workers get all 13 pairs, Pages only the first 6.
+const EXTRA_IPS = [
+  ["spring.io", "80"], ["www.dictionary.com", "8080"], ["www.cambridge.org", "8880"],
+  ["www.pitchbook.com", "2052"], ["www.codeforces.com", "2082"], ["pitchbook.com", "2086"],
+  ["www.spring.io", "2095"], ["www.momentjs.com", "443"], ["www.greylock.com", "8443"],
+  ["producthunt.com", "2053"], ["jquery.com", "2083"], ["pandas.pydata.org", "2087"],
+  ["www.merriam-webster.com", "2096"],
+];
+const CDNIP = "www.momentjs.com";
+function extraVars(method) {
+  const n = method === "pages" ? 6 : 13;
+  const vars = {};
+  EXTRA_IPS.slice(0, n).forEach(([ip, pt], i) => {
+    vars["ip" + (i + 1)] = ip;
+    vars["pt" + (i + 1)] = pt;
+  });
+  vars.cdnip = CDNIP;
+  return vars;
+}
+
 // Minimal browser-global shim for scripts written for Pages that touch `window` at top level.
 const SHIM = "globalThis.window = globalThis.window || globalThis;\n";
 
@@ -122,7 +142,7 @@ async function fetchSource(urls) {
 
 // ---------- install flow ----------
 
-async function deployWorkers(token, accountId, name, code, variable, secret) {
+async function deployWorkers(token, accountId, name, code, variable, secret, extra = {}) {
   const form = new FormData();
   form.append(
     "metadata",
@@ -130,7 +150,10 @@ async function deployWorkers(token, accountId, name, code, variable, secret) {
       [JSON.stringify({
         main_module: "worker.js",
         compatibility_date: "2025-01-01",
-        bindings: [{ type: "plain_text", name: variable, text: secret }],
+        bindings: [
+          { type: "plain_text", name: variable, text: secret },
+          ...Object.entries(extra).map(([k, v]) => ({ type: "plain_text", name: k, text: v })),
+        ],
         ...(PLACEMENT_REGION ? { placement: { region: PLACEMENT_REGION } } : {}),
       })],
       { type: "application/json" }
@@ -162,13 +185,13 @@ async function deployWorkers(token, accountId, name, code, variable, secret) {
   return `${name}.${sub}.workers.dev`;
 }
 
-async function deployPages(token, accountId, name, code, variable, secret) {
+async function deployPages(token, accountId, name, code, variable, secret, extra = {}) {
   const project = await cf(`/accounts/${accountId}/pages/projects`, token, {
     method: "POST",
     json: {
       name,
       production_branch: "main",
-      deployment_configs: { production: { env_vars: { [variable]: { type: "plain_text", value: secret } } } },
+      deployment_configs: { production: { env_vars: { [variable]: { type: "plain_text", value: secret }, ...Object.fromEntries(Object.entries(extra).map(([k, v]) => [k, { type: "plain_text", value: v }])) } } },
     },
   });
   // Best-effort: set the placement hint for Pages Functions. A rejection here must not break the install.
@@ -214,17 +237,18 @@ async function install(token, method, protocol) {
   const secret = protocol === "vless" ? randomUUID() : randomString(24, ALNUM);
   const name = neutralName();
 
+  const extra = extraVars(method);
   let host;
   if (method === "pages") {
-    host = await deployPages(token, accountId, name, code, source.variable, secret);
+    host = await deployPages(token, accountId, name, code, source.variable, secret, extra);
   } else {
     try {
-      host = await deployWorkers(token, accountId, name, code, source.variable, secret);
+      host = await deployWorkers(token, accountId, name, code, source.variable, secret, extra);
     } catch (e) {
       // Workers validates the script by running its global scope; browser-only globals
       // (e.g. `window`) throw there. Retry once with a small shim prepended.
       if (e instanceof ApiError && /is not defined/.test(e.detail)) {
-        host = await deployWorkers(token, accountId, name, SHIM + code, source.variable, secret);
+        host = await deployWorkers(token, accountId, name, SHIM + code, source.variable, secret, extra);
       } else {
         throw e;
       }
@@ -309,6 +333,7 @@ a{color:var(--acc);cursor:pointer;text-decoration:none}
 .res code{display:block;direction:ltr;text-align:left;background:#0d1a38;border-radius:10px;padding:8px 10px;margin:4px 0 10px;word-break:break-all;font-size:.85rem}
 .copy{background:var(--acc);color:#fff;border:0;border-radius:10px;padding:4px 14px;font:inherit;cursor:pointer}
 .note a{color:var(--acc)}
+.links{margin:0 0 4px;font-size:.92rem}
 .note{margin-top:16px;text-align:center;color:var(--mute);font-size:.82rem}
 .hidden{display:none}
 </style>
@@ -316,6 +341,7 @@ a{color:var(--acc);cursor:pointer;text-decoration:none}
 <body>
 <main>
 <header><h1 id="title"></h1><button class="lang" id="lang" type="button"></button></header>
+<p class="links"><a href="https://github.com/soroushse7o/" target="_blank" rel="noopener noreferrer" id="tgh1"></a> · <a href="https://github.com/soroushse7o/Cloudflare-vless-trojan/" target="_blank" rel="noopener noreferrer" id="tgh2"></a></p>
 <ol id="steps"></ol>
 <form id="f" autocomplete="off">
 <label class="field">
@@ -388,7 +414,7 @@ e_CF_ERROR:"کلادفلر خطا برگرداند.",
 e_BAD_REQUEST:"درخواست نامعتبر است.",e_FORBIDDEN:"درخواست نامعتبر است.",e_UNKNOWN:"خطای ناشناخته."}
 };
 var $=function(i){return document.getElementById(i)};
-var lang=(navigator.language||"en").toLowerCase().indexOf("fa")===0?"fa":"en";
+var lang="fa";
 var st="standby",errRes=null,result=null,busy=false;
 function t(k){return L[lang][k]}
 function errText(r){var m=t("e_"+r.code)||t("e_UNKNOWN");return r.detail?m+" ("+r.detail+")":m}
@@ -400,7 +426,7 @@ function render(){
  for(var i=0;i<as.length;i++){as[i].href=as[i].getAttribute("data-l")==="token"?TOKEN_URL:SIGNUP_URL;as[i].target="_blank";as[i].rel="noopener noreferrer"}
  $("token").placeholder=t("ph");$("eye").setAttribute("aria-label",t("eye"));
  $("go").textContent=t("install");$("note").textContent=t("note");
- $("gh1").textContent=t("gh1");$("gh2").textContent=t("gh2");
+ $("gh1").textContent=t("gh1");$("gh2").textContent=t("gh2");$("tgh1").textContent=t("gh1");$("tgh2").textContent=t("gh2");
  $("status").className="status "+st;$("stext").textContent=t(st);
  var m=$("smsg");
  if(st==="error"&&errRes){m.textContent=errText(errRes);m.classList.remove("hidden")}else m.classList.add("hidden");
