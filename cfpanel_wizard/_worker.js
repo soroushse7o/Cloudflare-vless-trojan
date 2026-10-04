@@ -35,11 +35,11 @@ const PLACEMENT_REGION = "azure:westeurope";
 const EXTRA_IPS = [
   ["spring.io", "80"], ["www.dictionary.com", "8080"], ["www.cambridge.org", "8880"],
   ["www.pitchbook.com", "2052"], ["www.codeforces.com", "2082"], ["pitchbook.com", "2086"],
-  ["www.spring.io", "2095"], ["www.momentjs.com", "443"], ["www.greylock.com", "8443"],
-  ["producthunt.com", "2053"], ["jquery.com", "2083"], ["pandas.pydata.org", "2087"],
-  ["www.merriam-webster.com", "2096"],
+  ["www.spring.io", "2095"], ["104.16.32.155", "443"], ["104.26.9.204", "443"],
+  ["producthunt.com", "443"], ["jquery.com", "443"], ["digitalocean.com", "2087"],
+  ["digitalocean.com", "443"],
 ];
-const CDNIP = "www.momentjs.com";
+const CDNIP = "www.speedtest.net";
 function extraVars(method) {
   const n = method === "pages" ? 6 : 13;
   const vars = {};
