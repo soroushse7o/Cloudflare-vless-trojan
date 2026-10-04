@@ -28,11 +28,11 @@ const DEFAULT_PROXY_IPS = [
 const DEFAULT_CDNIP = "www.speedtest.net";
 const DEFAULT_ADDRS = [
   // 7 x http ports
-  "www.speedtest.net", "zula.ir", "speed.cloudflare.com", "www.cloudflare.com",
-  "cdnjs.cloudflare.com", "developers.cloudflare.com", "blog.cloudflare.com",
+  "www.speedtest.net", "transfernow.net", "modx.com", "philips.com",
+  "panopto.com", "coursehero.com", "filefactory.com",
   // 6 x https ports
-  "www.speedtest.net", "zula.ir", "speed.cloudflare.com", "www.cloudflare.com",
-  "cdnjs.cloudflare.com", "developers.cloudflare.com",
+  "www.speedtest.net", "mailbigfile.com", "filefactory.com", "upwork.com",
+  "authorize.net", "mailbigfile.com",
 ];
 const DEFAULT_PORTS = ["80", "8080", "8880", "2052", "2082", "2086", "2095", "443", "8443", "2053", "2083", "2087", "2096"];
 const DEFAULT_DOH = "https://cloudflare-dns.com/dns-query";
