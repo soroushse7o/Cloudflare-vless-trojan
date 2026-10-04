@@ -1,3 +1,6 @@
+// Maintained & updated by soroushse7o — https://github.com/soroushse7o/
+// Project: https://github.com/soroushse7o/Cloudflare-vless-trojan/
+//
 // Install Wizard — single-file Cloudflare Worker (UI + stateless API).
 // Nothing is stored: the token is used only for the requests made while installing.
 // ویزارد نصب — یک Worker تک‌فایل. هیچ داده‌ای ذخیره نمی‌شود.
@@ -52,6 +55,22 @@ function randomString(length, alphabet) {
   }
   return out;
 }
+// Fully random UUID: all 128 bits random (no fixed version/variant bits), formatted 8-4-4-4-12.
+function randomUUID() {
+  const h = [...crypto.getRandomValues(new Uint8Array(16))].map((b) => b.toString(16).padStart(2, "0")).join("");
+  return `${h.slice(0, 8)}-${h.slice(8, 12)}-${h.slice(12, 16)}-${h.slice(16, 20)}-${h.slice(20)}`;
+}
+
+// Neutral random project/worker name: never contains "vless" or "trojan".
+const NAME_A = ["amber", "blue", "calm", "dawn", "ember", "frost", "gold", "jade", "lunar", "maple", "north", "olive", "pearl", "quiet", "river", "silver", "terra", "violet", "willow", "zen"];
+const NAME_B = ["app", "site", "note", "page", "board", "desk", "lab", "hub", "space", "studio", "shop", "blog", "docs", "tool"];
+function pick(list) {
+  return list[crypto.getRandomValues(new Uint32Array(1))[0] % list.length];
+}
+function neutralName() {
+  return `${pick(NAME_A)}-${pick(NAME_B)}-${randomString(6, LOWER)}`;
+}
+
 const LOWER = "abcdefghijklmnopqrstuvwxyz0123456789";
 const ALNUM = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
@@ -192,8 +211,8 @@ async function install(token, method, protocol) {
   const code = await fetchSource(source[method]);
 
   // random credentials, generated per install and never stored
-  const secret = protocol === "vless" ? crypto.randomUUID() : randomString(24, ALNUM);
-  const name = protocol + "-" + randomString(8, LOWER);
+  const secret = protocol === "vless" ? randomUUID() : randomString(24, ALNUM);
+  const name = neutralName();
 
   let host;
   if (method === "pages") {
@@ -289,6 +308,7 @@ a{color:var(--acc);cursor:pointer;text-decoration:none}
 .res .lbl{color:var(--mute)}
 .res code{display:block;direction:ltr;text-align:left;background:#0d1a38;border-radius:10px;padding:8px 10px;margin:4px 0 10px;word-break:break-all;font-size:.85rem}
 .copy{background:var(--acc);color:#fff;border:0;border-radius:10px;padding:4px 14px;font:inherit;cursor:pointer}
+.note a{color:var(--acc)}
 .note{margin-top:16px;text-align:center;color:var(--mute);font-size:.82rem}
 .hidden{display:none}
 </style>
@@ -321,6 +341,7 @@ a{color:var(--acc);cursor:pointer;text-decoration:none}
 </div>
 </div>
 <p class="note" id="note"></p>
+<p class="note" id="gh"><a href="https://github.com/soroushse7o/" target="_blank" rel="noopener noreferrer" id="gh1"></a> · <a href="https://github.com/soroushse7o/Cloudflare-vless-trojan/" target="_blank" rel="noopener noreferrer" id="gh2"></a></p>
 </main>
 <script>
 (function(){
@@ -336,6 +357,7 @@ ph:"Cloudflare API Token",eye:"Show / hide token",install:"Install",
 standby:"Standby",deploying:"Deploying...",success:"Success",error:"Error",
 link:"Private Link",uuid:"UUID",pswd:"Password",copy:"Copy",copied:"Copied",
 note:"Nothing is stored. Your token is only used for this install, directly against Cloudflare.",
+gh1:"GitHub page",gh2:"Project on GitHub",
 e_TOKEN_EMPTY:"Enter your Cloudflare API token.",
 e_TOKEN_INVALID:"The token is invalid or expired. Create a new one with the link in step 2.",
 e_PERMISSION:"The token does not have enough permissions. Create it with the link in step 2.",
@@ -354,6 +376,7 @@ ph:"توکن API کلادفلر",eye:"نمایش / مخفی کردن توکن",i
 standby:"آماده‌باش",deploying:"در حال نصب...",success:"موفق",error:"خطا",
 link:"لینک خصوصی",uuid:"UUID",pswd:"رمز عبور",copy:"کپی",copied:"کپی شد",
 note:"هیچ داده‌ای ذخیره نمی‌شود. توکن فقط برای همین نصب و مستقیم با کلادفلر استفاده می‌شود.",
+gh1:"پیج گیت‌هاب",gh2:"پروژه در گیت‌هاب",
 e_TOKEN_EMPTY:"توکن API کلادفلر را وارد کنید.",
 e_TOKEN_INVALID:"توکن نامعتبر یا منقضی است. با لینک مرحله ۲ یک توکن جدید بسازید.",
 e_PERMISSION:"دسترسی توکن کافی نیست. آن را با لینک مرحله ۲ بسازید.",
@@ -377,6 +400,7 @@ function render(){
  for(var i=0;i<as.length;i++){as[i].href=as[i].getAttribute("data-l")==="token"?TOKEN_URL:SIGNUP_URL;as[i].target="_blank";as[i].rel="noopener noreferrer"}
  $("token").placeholder=t("ph");$("eye").setAttribute("aria-label",t("eye"));
  $("go").textContent=t("install");$("note").textContent=t("note");
+ $("gh1").textContent=t("gh1");$("gh2").textContent=t("gh2");
  $("status").className="status "+st;$("stext").textContent=t(st);
  var m=$("smsg");
  if(st==="error"&&errRes){m.textContent=errText(errRes);m.classList.remove("hidden")}else m.classList.add("hidden");
@@ -405,7 +429,7 @@ $("f").onsubmit=function(e){
   body:JSON.stringify({token:token,method:$("method").value,protocol:protocol})})
  .then(function(r){return r.json()})
  .then(function(d){
-  if(d.ok){st="success";result={link:d.link,secret:d.secret,protocol:protocol};$("token").value=""}
+  if(d.ok){st="success";result={link:d.link,secret:d.secret,protocol:protocol}}
   else{st="error";errRes=d}
  })
  .catch(function(){st="error";errRes={code:"NETWORK"}})
