@@ -90,6 +90,19 @@
 | `CF-Workers-CheckSocks5` | ابزار بررسی Socks5 |
 | `clean-cf-ipfinder+SpeedTest` | یافتن IP تمیز کلادفلر و تست سرعت |
 
+### ابزارهای جانبی
+
+این ابزارها برای نصب با ویزارد لازم نیستند و برای کاربران پیشرفته‌ترند.
+
+#### [s5http_wkpgs](https://github.com/soroushse7o/Cloudflare-vless-trojan/tree/main/s5http_wkpgs)
+پراکسی محلی **Socks5/Http** روی Cloudflare (بخش سرور روی Workers/Pages و بخش کلاینت روی دستگاه خودتان). سه حالت دارد: **ECH-TLS**، **TLS عادی** و **بدون TLS**. اسکریپت نصب روی لینوکس/روتر و ایمیج Docker هم دارد. توضیح کامل و متغیرها در README همان پوشه است.
+
+#### [CF-Workers-CheckSocks5](https://github.com/soroushse7o/Cloudflare-vless-trojan/tree/main/CF-Workers-CheckSocks5)
+یک Worker برای **بررسی سالم بودن پراکسی‌های Socks5**. آن را روی حساب خودتان اجرا می‌کنید، آدرس پراکسی را می‌دهید و نتیجه‌ی اتصال را می‌بینید. به کار شما می‌آید وقتی از پراکسی Socks5 شخصی استفاده می‌کنید.
+
+#### [clean-cf-ipfinder+SpeedTest](https://github.com/soroushse7o/Cloudflare-vless-trojan/tree/main/clean-cf-ipfinder%2BSpeedTest)
+ابزار پیدا کردن **IP تمیز کلادفلر** و **تست سرعت** آن‌ها (بر پایه‌ی CloudflareSpeedTest). IPهای سالم و سریع را روی شبکه‌ی خودتان پیدا می‌کنید و می‌توانید در متغیرهای `ip1..ip13` یا `cdnip` استفاده کنید.
+
 ### اجرای نسخه‌ی شخصی ویزارد (اختیاری)
 
 اگر نمی‌خواهید از ویزارد عمومی استفاده کنید، یک Worker جدید در حساب خودتان بسازید و محتوای فایل ویزارد (`_worker.js` داخل پوشه‌ی `cfpanel_wizard`) را در آن قرار دهید. ویزارد خودش اسکریپت‌ها را از همین مخزن می‌گیرد.
@@ -176,6 +189,19 @@ Regular users don't need this section — the wizard does all of it automaticall
 | `s5http_wkpgs` | local Socks5/Http proxy (server + client) |
 | `CF-Workers-CheckSocks5` | Socks5 checker tool |
 | `clean-cf-ipfinder+SpeedTest` | clean Cloudflare IP finder and speed test |
+
+### Extra tools
+
+These are not needed for the wizard install and are meant for more advanced users.
+
+#### [s5http_wkpgs](https://github.com/soroushse7o/Cloudflare-vless-trojan/tree/main/s5http_wkpgs)
+A local **Socks5/Http** proxy on Cloudflare (the server part runs on Workers/Pages, the client part on your own device). Three modes: **ECH-TLS**, **plain TLS** and **no TLS**. It also has an install script for Linux/routers and a Docker image. Full details and variables are in that folder's README.
+
+#### [CF-Workers-CheckSocks5](https://github.com/soroushse7o/Cloudflare-vless-trojan/tree/main/CF-Workers-CheckSocks5)
+A Worker that **checks whether Socks5 proxies work**. You run it on your own account, enter a proxy address and see the connection result. Handy if you use a personal Socks5 proxy.
+
+#### [clean-cf-ipfinder+SpeedTest](https://github.com/soroushse7o/Cloudflare-vless-trojan/tree/main/clean-cf-ipfinder%2BSpeedTest)
+A tool to find **clean Cloudflare IPs** and **speed-test** them (based on CloudflareSpeedTest). It finds healthy, fast IPs on your own network, which you can use in the `ip1..ip13` or `cdnip` variables.
 
 ### Run your own copy of the wizard (optional)
 
