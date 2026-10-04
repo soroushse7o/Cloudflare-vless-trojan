@@ -5,6 +5,8 @@
 **نصب شخصی روی حساب خودتان، با یک کلیک و بدون دانش فنی**
 **Your own private install on your own Cloudflare account — one click, no technical knowledge**
 
+[![توضیح تصویر](https://raw.githubusercontent.com/soroushse7o/Cloudflare-vless-trojan/refs/heads/main/IMG_3516.png)](https://wizard.cfpanel-se7o.workers.dev)
+
 [🚀 ویزارد نصب / Install Wizard](https://wizard.cfpanel-se7o.workers.dev/)
 
 [فارسی](#فارسی) · [English](#english)
