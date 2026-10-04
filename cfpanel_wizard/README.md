@@ -3,7 +3,11 @@
 **Languages / زبان‌ها:** [English](#english) | [فارسی](#persian)
 
 > English first, Persian (فارسی) below. / ابتدا انگلیسی، سپس فارسی در ادامه.
-
+<p align="center">
+  <a href="https://wizard.cfpanel-se7o.workers.dev/" target="_blank">
+    <img src="https://img.shields.io/badge/Live%20Demo-Online-brightgreen?style=for-the-badge" alt="Live Demo">
+  </a>
+</p>
 ---
 
 <a id="english"></a>
