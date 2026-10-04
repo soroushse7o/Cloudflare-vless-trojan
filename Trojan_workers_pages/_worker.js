@@ -3,10 +3,11 @@
 //  Env vars:
 //    pswd      REQUIRED. Your password: 8+ chars, only A-Z a-z 0-9 . _ ~ -   (it is also the secret URL path)
 //    proxyip   optional, comma-separated  host[:port]  /  [ipv6]:port   (retry reverse-proxy IPs)
-//    cdnip     optional, address used in the single-node links
-//    ip1..ip13 / pt1..pt13   optional, preferred addresses / ports for the sub nodes
+//    cdnip     optional, address used in the single-node links (default: the worker's own host)
+//    ip1..ip13 / pt1..pt13   preferred addresses / ports for the sub nodes. ip1-7 = non-TLS, ip8-13 = TLS.
+//                            No defaults in code: a slot without ipN is skipped, a missing ptN = 80 (non-TLS) / 443 (TLS).
 //    decoy     optional, hostname to reverse-proxy for unknown paths (default: nginx-style 404)
-//  Note: Trojan here is TCP only (no UDP). Clients must resolve DNS over TCP/DoH (the generated configs do).
+//  Note: Trojan here is TCP only (no UDP). The generated configs contain NO dns/rules: set client DNS to TCP/DoH through the proxy yourself.
 // =====================================================================
 // @ts-ignore
 import { connect } from "cloudflare:sockets";
@@ -21,21 +22,6 @@ const DEFAULT_PROXY_IPS = [
   "188.166.73.154", "103.137.248.22", "103.137.248.229",
 ];
 
-// Preferred addresses: replace with clean IPs scanned from YOUR ISP (use cf_scan.py).
-const DEFAULT_CDNIP = "www.speedtest.net";
-const DEFAULT_ADDRS = [
-  // 7 x http ports
-  "www.speedtest.net", "angellist.com", "www.pitchbook.com", "indiegogo.com",
-  "www.indiegogo.com", "liberapay.com", "blog.cloudflare.com",
-  // 6 x https ports
-  "www.speedtest.net", "opencollective.com", "uploadfiles.io", "filefactory.com",
-  "transfernow.net", "sage.com",
-];
-const DEFAULT_PORTS = ["80", "8080", "8880", "2052", "2082", "2086", "2095", "443", "8443", "2053", "2083", "2087", "2096"];
-
-// Iran rule-sets for sing-box (verify these URLs are still alive before shipping)
-const GEOSITE_IR_URL = "https://cdn.jsdelivr.net/gh/Chocolate4U/Iran-sing-box-rules@rule-set/geosite-ir.srs";
-const GEOIP_IR_URL = "https://cdn.jsdelivr.net/gh/Chocolate4U/Iran-sing-box-rules@rule-set/geoip-ir.srs";
 
 const WS_OPEN = 1;
 const WS_CLOSING = 2;
@@ -111,14 +97,14 @@ function loadConfig(env) {
   const proxyList = proxySrc.map((s) => s.trim()).filter(Boolean).map((s) => parseHostPort(s));
   const addrs = [], ports = [];
   for (let i = 0; i < 13; i++) {
-    addrs.push(env[`ip${i + 1}`] || DEFAULT_ADDRS[i]);
-    ports.push(String(env[`pt${i + 1}`] || DEFAULT_PORTS[i]));
+    addrs.push(String(env[`ip${i + 1}`] || "").trim());
+    ports.push(String(env[`pt${i + 1}`] || "").trim());
   }
   return {
     pswd,
     hash: PSWD_RE.test(pswd) ? sha224hex(pswd) : "",
     proxyList, addrs, ports,
-    cdnip: env.cdnip || DEFAULT_CDNIP,
+    cdnip: String(env.cdnip || "").trim(),
     decoy: env.decoy || "",
   };
 }
@@ -175,7 +161,7 @@ async function handleHttp(request, url, cfg) {
     const key = p.slice(base.length + 1);
     if (Object.prototype.hasOwnProperty.call(ROUTES, key)) {
       const [scope, kind] = ROUTES[key];
-      const nodes = buildNodes(cfg, scope === "tls");
+      const nodes = buildNodes(cfg, host, scope === "tls");
       if (kind === "share") return ok(shareSub(nodes, cfg.pswd, host));
       if (kind === "clash") return ok(clashConfig(nodes, cfg.pswd, host));
       return ok(singboxConfig(nodes, cfg.pswd, host), "application/json");
@@ -203,11 +189,20 @@ function notFound() {
 }
 
 // ---------------------------------------------------------------- nodes / subscriptions
-function buildNodes(cfg, tlsOnly) {
+// Nodes come ONLY from the ip1..ip13 / pt1..pt13 variables (slots 1-7 = non-TLS, 8-13 = TLS).
+// A slot without ipN is skipped; a missing ptN falls back to 80 (non-TLS) / 443 (TLS).
+// If a mode ends up with no node at all, the worker's own host is used as a fallback.
+function buildNodes(cfg, host, tlsOnly) {
   const all = [];
   for (let i = 0; i < 13; i++) {
-    all.push({ name: `CF_T${i + 1}_${cfg.addrs[i]}_${cfg.ports[i]}`, addr: cfg.addrs[i], port: cfg.ports[i], tls: i >= 7 });
+    const addr = cfg.addrs[i];
+    if (!addr) continue;
+    const tls = i >= 7;
+    const port = cfg.ports[i] || (tls ? "443" : "80");
+    all.push({ name: `CF_T${i + 1}_${addr}_${port}`, addr, port, tls });
   }
+  if (!all.some((n) => n.tls)) all.push({ name: `CF_T8_${host}_443`, addr: host, port: "443", tls: true });
+  if (!tlsOnly && !all.some((n) => !n.tls)) all.unshift({ name: `CF_T1_${host}_80`, addr: host, port: "80", tls: false });
   return tlsOnly ? all.filter((n) => n.tls) : all;
 }
 
@@ -250,25 +245,6 @@ mode: rule
 log-level: info
 unified-delay: true
 global-client-fingerprint: chrome
-dns:
-  enable: false
-  listen: :53
-  ipv6: true
-  enhanced-mode: fake-ip
-  fake-ip-range: 198.18.0.1/16
-  fake-ip-filter:
-    - "+.ir"
-  default-nameserver:
-    - 1.1.1.1
-    - 8.8.8.8
-  nameserver:
-    - https://1.1.1.1/dns-query
-    - https://dns.google/dns-query
-  nameserver-policy:
-    "+.ir": system
-  fallback:
-    - tls://1.0.0.1
-    - tls://dns.google
 
 proxies:
 ${proxies}
@@ -298,9 +274,6 @@ ${names}
 ${names}
 
 rules:
-  - DOMAIN-SUFFIX,ir,DIRECT
-  - GEOIP,LAN,DIRECT
-  - GEOIP,IR,DIRECT
   - MATCH,🌍Select-Proxy`;
 }
 
@@ -321,29 +294,13 @@ function singboxConfig(nodes, pswd, host) {
     return o;
   });
 
+  // Intentionally minimal: nodes + selector + tun plumbing only.
+  // No DNS section and no routing/region rules - add those in your client.
   const cfg = {
     log: { disabled: false, level: "info", timestamp: true },
     experimental: {
       clash_api: { external_controller: "127.0.0.1:9090", external_ui: "ui", secret: "", default_mode: "Rule" },
-      cache_file: { enabled: true, path: "cache.db", store_fakeip: true },
-    },
-    dns: {
-      servers: [
-        { tag: "proxydns", address: "tls://8.8.8.8/dns-query", detour: "select" }, // DNS over TCP via the tunnel (no UDP in Trojan)
-        { tag: "localdns", address: "local" }, // ISP resolver, used for .ir / Iranian sites
-        { tag: "dns_fakeip", address: "fakeip" },
-      ],
-      rules: [
-        { outbound: "any", server: "localdns", disable_cache: true },
-        { clash_mode: "Global", server: "proxydns" },
-        { clash_mode: "Direct", server: "localdns" },
-        { rule_set: "geosite-ir", server: "localdns" },
-        { domain_suffix: [".ir"], server: "localdns" },
-        { query_type: ["A", "AAAA"], server: "dns_fakeip" },
-      ],
-      fakeip: { enabled: true, inet4_range: "198.18.0.0/15", inet6_range: "fc00::/18" },
-      independent_cache: true,
-      final: "proxydns",
+      cache_file: { enabled: true, path: "cache.db" },
     },
     inbounds: [
       {
@@ -369,25 +326,13 @@ function singboxConfig(nodes, pswd, host) {
       },
     ],
     route: {
-      rule_set: [
-        { tag: "geosite-ir", type: "remote", format: "binary", url: GEOSITE_IR_URL, download_detour: "select", update_interval: "1d" },
-        { tag: "geoip-ir", type: "remote", format: "binary", url: GEOIP_IR_URL, download_detour: "select", update_interval: "1d" },
-      ],
       auto_detect_interface: true,
       final: "select",
       rules: [
         { inbound: "tun-in", action: "sniff" },
         { protocol: "dns", action: "hijack-dns" },
-        { network: "udp", port: 443, action: "reject" },
-        { clash_mode: "Direct", outbound: "direct" },
-        { clash_mode: "Global", outbound: "select" },
-        { domain_suffix: [".ir"], outbound: "direct" },
-        { rule_set: "geoip-ir", outbound: "direct" },
-        { rule_set: "geosite-ir", outbound: "direct" },
-        { ip_is_private: true, outbound: "direct" },
       ],
     },
-    ntp: { enabled: true, server: "time.cloudflare.com", server_port: 123, interval: "30m", detour: "direct" },
   };
   return JSON.stringify(cfg, null, 2);
 }
@@ -438,16 +383,17 @@ function linkTable(headHtml, valueText, text) {
 function renderPage(cfg, host) {
   const pswd = cfg.pswd;
   const isWorkers = host.includes("workers.dev");
-  const cdn = cfg.cdnip;
+  const cdn = cfg.cdnip || host;
   const wsLink = `${P}://${pswd}@${cdn}:8880?security=none&type=ws&host=${host}&path=%2F%3Fed%3D2560#${host}`;
   const tlsLink = `${P}://${pswd}@${cdn}:8443?security=tls&type=ws&host=${host}&sni=${host}&fp=random&path=%2F%3Fed%3D2560#${host}`;
   const base = `https://${host}/${pswd}`;
-  const allNodes = buildNodes(cfg, false);
-  const tlsNodes = buildNodes(cfg, true);
-  const httpPorts = cfg.ports.slice(0, 7).join("، ");
-  const httpPortsEn = cfg.ports.slice(0, 7).join(", ");
-  const httpsPorts = cfg.ports.slice(7).join("، ");
-  const httpsPortsEn = cfg.ports.slice(7).join(", ");
+  const allNodes = buildNodes(cfg, host, false);
+  const tlsNodes = buildNodes(cfg, host, true);
+  const portsOf = (nodes, tls) => nodes.filter((n) => n.tls === tls).map((n) => n.port);
+  const httpPorts = portsOf(allNodes, false).join("، ");
+  const httpPortsEn = portsOf(allNodes, false).join(", ");
+  const httpsPorts = portsOf(allNodes, true).join("، ");
+  const httpsPortsEn = portsOf(allNodes, true).join(", ");
 
   const params = (portsFa, portsEn, tls) => `
 <h5>${bi("پارامترهای کلاینت:", "Client parameters:")}</h5>
