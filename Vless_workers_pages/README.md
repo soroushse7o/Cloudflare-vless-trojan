@@ -1,4 +1,4 @@
-# __TITLE__ — نسخه‌ی ایران
+# Cloudflare Worker — VLESS — نسخه‌ی ایران
 
 **[فارسی](#فارسی) · [English](#english)**
 
@@ -31,7 +31,7 @@
 
 یک اسکریپت Cloudflare Worker (نسخه‌ی **VLESS**) که پراکسی روی WebSocket می‌سازد و همراه آن صفحه‌ی کانفیگ دوزبانه (فارسی/انگلیسی) و لینک‌های اشتراک برای v2ray، Clash-meta و sing-box تولید می‌کند. نسخه‌ی اصلی برای کاربران چینی بهینه شده بود؛ این نسخه برای ایران بازنویسی و امن‌تر شده است:
 
-- قواعد مسیریابی و DNS برای **ایران** (`.ir`، `geosite-ir`، `geoip-ir`، `GEOIP,IR`) به‌جای چین.
+- کانفیگ‌های Clash و sing-box عمداً **ساده** هستند: فقط نودها و گروه‌ها، بدون DNS و بدون قواعد مسیریابی/منطقه‌ای (قواعد چینی حذف شد). هر DNS و قاعده‌ای که خواستی در کلاینت اضافه کن.
 - رفع آسیب‌پذیری `/pyip=` (تغییر سراسری ProxyIP توسط افراد ناشناس)، نشت `request.cf`، XSS در صفحه‌ی کانفیگ و چند باگ مدیریت خطا.
 - پاسخ پیش‌فرض مسیرهای ناشناس: صفحه‌ی ۴۰۴ شبیه nginx (یا reverse-proxy به یک سایت دلخواه با `decoy`).
 - تولید کانفیگ‌ها از روی یک لیست نود به‌جای کپی‌پیست ۱۳ باره؛ کد حدود ۶۰۰ خط است.
@@ -116,18 +116,20 @@ curl -i -N https://YOUR-HOST/?ed=2560 \
 <a id="fa-env"></a>
 ## متغیرهای محیطی (env)
 
-همه‌ی مقدارها رشته هستند. هر چیزی که تنظیم نکنی، از مقدار پیش‌فرض ابتدای فایل استفاده می‌کند.
+همه‌ی مقدارها رشته هستند. **آدرس‌ها، پورت‌ها و `cdnip` عمداً پیش‌فرضی داخل کد ندارند** و فقط با متغیر تنظیم می‌شوند. پیش‌فرض‌های داخل کد: لیست ProxyIP، مقدار `doh` و UUID نمونه.
 
 | متغیر | اجباری | توضیح |
 |---|---|---|
 | `uuid` | بله* | یک یا چند UUID جداشده با کاما. UUID اول در لینک‌ها و مسیر صفحه‌ی کانفیگ استفاده می‌شود. *اگر ست نکنی UUID نمونه‌ی داخل کد استفاده می‌شود — **حتماً عوضش کن** |
 | `proxyip` | خیر | یک یا چند ProxyIP جداشده با کاما، مثل `1.2.3.4:443,[2606:4700::1]:443,example.com`. اگر پورت ننویسی ۴۴۳ است |
-| `cdnip` | خیر | آدرسی که در **لینک‌های تکی** صفحه‌ی کانفیگ (پورت‌های ۸۸۸۰ و ۸۴۴۳) به‌جای آدرس سرور می‌آید |
-| `ip1` … `ip7` | خیر | آدرس بهینه‌ی ۷ نود **بدون TLS** (پورت‌های HTTP) |
-| `ip8` … `ip13` | خیر | آدرس بهینه‌ی ۶ نود **TLS** (پورت‌های HTTPS) |
-| `pt1` … `pt13` | خیر | پورت هر نود. پیش‌فرض: `80, 8080, 8880, 2052, 2082, 2086, 2095` و `443, 8443, 2053, 2083, 2087, 2096` |
+| `cdnip` | خیر | آدرسی که در **لینک‌های تکی** صفحه‌ی کانفیگ (پورت‌های ۸۸۸۰ و ۸۴۴۳) می‌آید. اگر ست نشود، خود هاست ورکر استفاده می‌شود |
+| `ip1` … `ip7` | خیر | آدرس بهینه‌ی ۷ نود **بدون TLS** (پورت‌های HTTP). اگر `ipN` ست نشود، آن نود ساخته نمی‌شود |
+| `ip8` … `ip13` | خیر | آدرس بهینه‌ی ۶ نود **TLS** (پورت‌های HTTPS). اگر `ipN` ست نشود، آن نود ساخته نمی‌شود |
+| `pt1` … `pt13` | خیر | پورت هر نود. اگر `ptN` ست نشود: ۸۰ برای نودهای بدون TLS (۱ تا ۷) و ۴۴۳ برای نودهای TLS (۸ تا ۱۳). پورت‌های رایج: HTTP ← `80, 8080, 8880, 2052, 2082, 2086, 2095`؛ HTTPS ← `443, 8443, 2053, 2083, 2087, 2096` |
 | `doh` | خیر | آدرس DNS-over-HTTPS برای UDP/۵۳. پیش‌فرض `https://cloudflare-dns.com/dns-query` |
 | `decoy` | خیر | نام یک دامنه (بدون `https://`) که مسیرهای ناشناس را به آن reverse-proxy می‌کند. خالی = صفحه‌ی ۴۰۴ nginx |
+
+> **اگر هیچ `ipN` ای ست نکنی**، ورکر برای اینکه اشتراک خالی نماند از خود هاست استفاده می‌کند (`هاست:80` و `هاست:443`). برای نتیجه‌ی بهتر، آدرس‌های اسکن‌شده را با `ipN` و `ptN` بده.
 
 مثال `wrangler.toml` با آدرس‌های بهینه:
 
@@ -150,16 +152,16 @@ decoy = "www.example.com"
 | آدرس | محتوا |
 |---|---|
 | `/KEY` | صفحه‌ی کانفیگ (دوزبانه) |
-| `/KEY/ty` | اشتراک تجمیعی base64 — ۱۳ نود |
-| `/KEY/cl` | کانفیگ Clash-meta — ۱۳ نود |
-| `/KEY/sb` | کانفیگ sing-box — ۱۳ نود |
-| `/KEY/pty` · `/KEY/pcl` · `/KEY/psb` | همان‌ها ولی فقط ۶ نود TLS |
+| `/KEY/ty` | اشتراک تجمیعی base64 — تا ۱۳ نود (بر اساس `ipN`های ست‌شده) |
+| `/KEY/cl` | کانفیگ Clash-meta — تا ۱۳ نود |
+| `/KEY/sb` | کانفیگ sing-box — تا ۱۳ نود |
+| `/KEY/pty` · `/KEY/pcl` · `/KEY/psb` | همان‌ها ولی فقط نودهای TLS |
 
 - روی `workers.dev` صفحه هر دو دسته نود (TLS و بدون TLS) را نشان می‌دهد؛ روی دامنه‌ی سفارشی فقط TLS.
 - `/KEY/ty` را به‌عنوان **Subscription** در کلاینت‌هایی مثل v2rayNG، Hiddify، NekoBox یا sing-box اضافه کن. برای Clash از `/KEY/cl` و برای sing-box از `/KEY/sb` استفاده کن.
 - نودهای **TLS** معمولاً بدون **Fragment** در ایران پایدار نیستند؛ اگر کلاینتت گزینه‌ی Fragment دارد روشنش کن.
 - مسیر WebSocket همیشه `/?ed=2560` است.
-- پیکربندی sing-box برای نسخه‌های **۱٫۱۱ تا ۱٫۱۲** نوشته شده؛ نسخه‌های جدیدتر برای فرمت قدیمی DNS هشدار deprecated می‌دهند.
+- کانفیگ‌های Clash و sing-box **DNS و قاعده‌ی مسیریابی ندارند** (در Clash فقط `MATCH`؛ در sing-box فقط `sniff` و `hijack-dns` برای کارکرد tun). هرچه لازم داری در کلاینت اضافه کن. sing-box نسخه‌ی **۱٫۱۱ یا بالاتر** لازم است.
 - UDP فقط برای DNS (پورت ۵۳) پشتیبانی می‌شود؛ بقیه‌ی ترافیک UDP کار نمی‌کند.
 
 <a id="fa-scan"></a>
@@ -167,7 +169,7 @@ decoy = "www.example.com"
 
 «آدرس بهینه» آدرسی (دامنه یا IP کلودفلر) است که کلاینت به آن وصل می‌شود و هدر `Host` ورکر تو را می‌فرستد. اینکه کدام آدرس کار کند به ISP و نوع اتصال تو بستگی دارد؛ پس باید خودت اسکن کنی.
 
-اسکریپت `cf_scan.py` (در پوشه‌ی اسکنر) این کار را انجام می‌دهد و خروجی را مستقیم در قالب env می‌دهد:
+هیچ آدرس بهینه‌ای داخل کد نیست؛ همه از متغیرهای `ip1..ip13` و `pt1..pt13` خوانده می‌شوند. اسکریپت `cf_scan.py` (در پوشه‌ی اسکنر) این مقدارها را پیدا می‌کند و خروجی را مستقیم در قالب env می‌دهد:
 
 ```bash
 python3 cf_scan.py --worker proxy.example.com
@@ -188,16 +190,14 @@ python3 cf_scan.py --worker proxy.example.com
 <a id="fa-custom"></a>
 ## شخصی‌سازی داخل کد
 
-مقدارهای ابتدای فایل پیش‌فرض‌ها هستند و env آن‌ها را override می‌کند:
+ثابت‌های ابتدای فایل (مثل لیست ProxyIP) پیش‌فرض هستند و env آن‌ها را override می‌کند:
 
 | چه چیزی | کجا |
 |---|---|
 | لیست ProxyIP | `DEFAULT_PROXY_IPS` |
-| آدرس‌ها و پورت‌های پیش‌فرض | `DEFAULT_CDNIP`، `DEFAULT_ADDRS` (۱۳ تا)، `DEFAULT_PORTS` |
+| منبع آدرس و پورت نودها | تابع `loadConfig` (خواندن `ipN` و `ptN`) و `buildNodes` — پیش‌فرضی داخل کد نیست |
 | DNS-over-HTTPS | `DEFAULT_DOH` |
-| rule-setهای sing-box ایران | `GEOSITE_IR_URL`، `GEOIP_IR_URL` (قبل از استفاده زنده بودنشان را چک کن) |
-| قوانین Clash | تابع `clashConfig` ← بخش `rules:` |
-| قوانین و DNS در sing-box | تابع `singboxConfig` ← `dns.rules` و `route.rules` |
+| ساختار کانفیگ Clash و sing-box | توابع `clashConfig` و `singboxConfig` |
 | نام نودها | `buildNodes` ← فیلد `name` |
 | نودهای بدون TLS یا TLS | `buildNodes` (۷ اول بدون TLS، ۶ تای آخر TLS) |
 | متن و ظاهر صفحه | `renderPage` (متغیر `note` برای خطوط بالای صفحه) |
@@ -205,10 +205,9 @@ python3 cf_scan.py --worker proxy.example.com
 
 مثال‌ها:
 
-- **دامنه‌ای را مستقیم (بدون پراکسی) کنی:** در `singboxConfig` داخل `route.rules` و `dns.rules` به `domain_suffix` اضافه کن (مثل `[".ir", ".example.com"]`) و در `clashConfig` یک خط `- DOMAIN-SUFFIX,example.com,DIRECT` قبل از `MATCH` بگذار.
 - **چند کاربر:** `uuid` را به‌صورت `uuid1,uuid2,uuid3` بده. همه‌ی آن‌ها اجازه‌ی اتصال دارند، ولی صفحه و اشتراک فقط UUID اول را می‌سازند؛ برای بقیه لینک را دستی با جایگزینی UUID بساز.
 - **پنهان‌تر شدن:** `decoy` را روی یک سایت معمولی بگذار تا مسیرهای ناشناس محتوای واقعی برگردانند.
-- **اضافه‌کردن نود:** تعداد نودها در کد ثابت ۱۳ است؛ برای تغییر باید حلقه‌ی `buildNodes` و آرایه‌های پیش‌فرض را گسترش بدهی.
+- **اضافه‌کردن نود:** تعداد نودها در کد ثابت ۱۳ است؛ برای تغییر باید حلقه‌های `loadConfig` و `buildNodes` را گسترش بدهی.
 
 نام پروتکل در کد عمداً به‌صورت escape (`\u...`) نوشته شده تا خود کلمه در سورس نباشد؛ هنگام ویرایش ثابت `P` را تغییر نده.
 
@@ -240,7 +239,6 @@ python3 cf_scan.py --worker proxy.example.com
 | فقط نودهای بدون TLS کار می‌کنند | دامنه/SNI فیلتر است | دامنه‌ی سفارشی بگیر و Fragment را روشن کن |
 | نودهای TLS کار نمی‌کنند | کلاینت Fragment ندارد یا خاموش است | Fragment را فعال یا کلاینت را عوض کن |
 | وصل می‌شود ولی بعضی سایت‌ها باز نمی‌شوند | مقصد پشت کلودفلر است و ProxyIP خراب است | `proxyip` را با IP سالم عوض کن |
-| دانلود rule-set در sing-box خطا می‌دهد | آدرس rule-set یا دسترسی jsDelivr | آدرس‌ها را بررسی کن یا اول بدون این قوانین وصل شو |
 | دامنه‌های بهینه اشتباه resolve می‌شوند | مسمومیت DNS ISP | در `ip1..ip13` به‌جای دامنه IP بگذار (`cf_scan.py --use-ip`) |
 | خطای `1101` یا `Exceeded` در کلودفلر | خطای اجرا یا محدودیت پلن | لاگ را با `npx wrangler tail` ببین و محدودیت‌ها را چک کن |
 
@@ -285,7 +283,7 @@ python3 cf_scan.py --worker proxy.example.com
 
 A Cloudflare Worker script (**VLESS** edition) that provides a WebSocket-based proxy, a bilingual (fa/en) config page, and subscription links for v2ray-style clients, Clash-meta and sing-box. The upstream script was tuned for users in China; this edition is reworked for Iran and hardened:
 
-- Routing/DNS rules for **Iran** (`.ir`, `geosite-ir`, `geoip-ir`, `GEOIP,IR`) instead of China.
+- The generated Clash and sing-box configs are intentionally **minimal**: nodes and groups only, no DNS and no routing/region rules (the Chinese rules were removed). Add any DNS/rules you want in your client.
 - Fixes for the `/pyip=` flaw (anyone could globally change the ProxyIP), the `request.cf` leak, XSS in the config page, and several error-handling bugs.
 - Unknown paths return an nginx-style 404 (or reverse-proxy a site of your choice via `decoy`).
 - Configs are generated from one node list instead of 13 copy-pasted blocks; the code is ~600 lines.
@@ -370,18 +368,20 @@ curl -i -N https://YOUR-HOST/?ed=2560 \
 <a id="en-env"></a>
 ## Environment variables
 
-All values are strings. Anything you don't set falls back to the defaults at the top of the file.
+All values are strings. **Addresses, ports and `cdnip` intentionally have no defaults in the code** — they are set only through variables. Defaults that live in the code: the ProxyIP list, the `doh` value and the sample UUID.
 
 | Variable | Required | Description |
 |---|---|---|
 | `uuid` | yes* | One or more UUIDs, comma-separated. The first is used for links and the config-page path. *If unset, the sample UUID in the code is used — **change it** |
 | `proxyip` | no | One or more ProxyIPs, comma-separated, e.g. `1.2.3.4:443,[2606:4700::1]:443,example.com`. Port defaults to 443 |
-| `cdnip` | no | Address used in the **single-node links** (ports 8880 / 8443) on the config page |
-| `ip1` … `ip7` | no | Preferred address of the 7 **non-TLS** nodes (HTTP ports) |
-| `ip8` … `ip13` | no | Preferred address of the 6 **TLS** nodes (HTTPS ports) |
-| `pt1` … `pt13` | no | Port of each node. Defaults: `80, 8080, 8880, 2052, 2082, 2086, 2095` and `443, 8443, 2053, 2083, 2087, 2096` |
+| `cdnip` | no | Address used in the **single-node links** (ports 8880 / 8443) on the config page. If unset, the worker's own host is used |
+| `ip1` … `ip7` | no | Preferred address of the 7 **non-TLS** nodes (HTTP ports). If `ipN` is unset, that node is not created |
+| `ip8` … `ip13` | no | Preferred address of the 6 **TLS** nodes (HTTPS ports). If `ipN` is unset, that node is not created |
+| `pt1` … `pt13` | no | Port of each node. If `ptN` is unset: 80 for non-TLS nodes (1–7) and 443 for TLS nodes (8–13). Common ports: HTTP → `80, 8080, 8880, 2052, 2082, 2086, 2095`; HTTPS → `443, 8443, 2053, 2083, 2087, 2096` |
 | `doh` | no | DNS-over-HTTPS endpoint for UDP/53. Default `https://cloudflare-dns.com/dns-query` |
 | `decoy` | no | Hostname (no `https://`) to reverse-proxy for unknown paths. Empty = nginx-style 404 |
+
+> **If you set no `ipN` at all**, the worker falls back to its own host (`host:80` and `host:443`) so the subscription is never empty. For better results, provide scanned addresses via `ipN` and `ptN`.
 
 Example `wrangler.toml` with preferred addresses:
 
@@ -404,16 +404,16 @@ After deploying (`KEY` is your `uuid`):
 | URL | Content |
 |---|---|
 | `/KEY` | Config page (bilingual) |
-| `/KEY/ty` | Aggregated base64 subscription — 13 nodes |
-| `/KEY/cl` | Clash-meta config — 13 nodes |
-| `/KEY/sb` | sing-box config — 13 nodes |
-| `/KEY/pty` · `/KEY/pcl` · `/KEY/psb` | Same, but only the 6 TLS nodes |
+| `/KEY/ty` | Aggregated base64 subscription — up to 13 nodes (depending on the `ipN` variables you set) |
+| `/KEY/cl` | Clash-meta config — up to 13 nodes |
+| `/KEY/sb` | sing-box config — up to 13 nodes |
+| `/KEY/pty` · `/KEY/pcl` · `/KEY/psb` | Same, but only the TLS nodes |
 
 - On `workers.dev` the page shows both node groups (TLS and non-TLS); on a custom domain only TLS.
 - Add `/KEY/ty` as a **Subscription** in clients such as v2rayNG, Hiddify, NekoBox or sing-box. Use `/KEY/cl` for Clash and `/KEY/sb` for sing-box.
 - **TLS** nodes are usually unreliable in Iran without **Fragment**; enable it if your client has it.
 - The WebSocket path is always `/?ed=2560`.
-- The sing-box config targets versions **1.11–1.12**; newer versions warn about the legacy DNS format.
+- The Clash and sing-box configs contain **no DNS and no routing rules** (Clash: just `MATCH`; sing-box: only `sniff` and `hijack-dns`, needed for tun to work). Add whatever you need in your client. sing-box **1.11 or newer** is required.
 - UDP is supported only for DNS (port 53); other UDP traffic won't work.
 
 <a id="en-scan"></a>
@@ -421,7 +421,7 @@ After deploying (`KEY` is your `uuid`):
 
 A "preferred address" is the domain or Cloudflare IP your client connects to while sending your worker's `Host`. Which ones work depends on your ISP and connection type, so scan from your own network.
 
-`cf_scan.py` (in the scanner folder) does this and outputs ready-to-use env lines:
+No preferred address lives in the code; everything is read from the `ip1..ip13` and `pt1..pt13` variables. `cf_scan.py` (in the scanner folder) finds them and outputs ready-to-use env lines:
 
 ```bash
 python3 cf_scan.py --worker proxy.example.com
@@ -442,16 +442,14 @@ Workers can't connect directly to some destinations (notably sites behind Cloudf
 <a id="en-custom"></a>
 ## Customizing the code
 
-The constants at the top are defaults; env vars override them:
+The constants at the top of the file (e.g. the ProxyIP list) are defaults; env vars override them:
 
 | What | Where |
 |---|---|
 | ProxyIP list | `DEFAULT_PROXY_IPS` |
-| Default addresses/ports | `DEFAULT_CDNIP`, `DEFAULT_ADDRS` (13), `DEFAULT_PORTS` |
+| Source of node addresses/ports | `loadConfig` (reads `ipN` / `ptN`) and `buildNodes` — no defaults in the code |
 | DNS-over-HTTPS | `DEFAULT_DOH` |
-| sing-box Iran rule-sets | `GEOSITE_IR_URL`, `GEOIP_IR_URL` (verify they're alive before use) |
-| Clash rules | `clashConfig` → `rules:` section |
-| sing-box rules & DNS | `singboxConfig` → `dns.rules` and `route.rules` |
+| Clash / sing-box config structure | `clashConfig` and `singboxConfig` |
 | Node names | `buildNodes` → `name` |
 | Which nodes are TLS/non-TLS | `buildNodes` (first 7 non-TLS, last 6 TLS) |
 | Page text and look | `renderPage` (the `note` variable holds the top lines) |
@@ -459,10 +457,9 @@ The constants at the top are defaults; env vars override them:
 
 Recipes:
 
-- **Send a domain direct (bypass the proxy):** add it to the `domain_suffix` arrays in `singboxConfig` (`dns.rules` and `route.rules`, e.g. `[".ir", ".example.com"]`) and add `- DOMAIN-SUFFIX,example.com,DIRECT` before `MATCH` in `clashConfig`.
 - **Several users:** set `uuid` to `uuid1,uuid2,uuid3`. All may connect, but the page and subscriptions only embed the first UUID; build links for the others by swapping the UUID.
 - **Look more ordinary:** set `decoy` to a normal site so unknown paths return real content.
-- **Changing the node count:** it is fixed at 13; extend the `buildNodes` loop and the default arrays to change it.
+- **Changing the node count:** it is fixed at 13; extend the `loadConfig` and `buildNodes` loops to change it.
 
 The protocol name is intentionally written as `\u...` escapes so the literal word isn't in the source; leave the `P` constant as it is when editing.
 
@@ -494,7 +491,6 @@ The protocol name is intentionally written as `\u...` escapes so the literal wor
 | Only non-TLS nodes work | domain/SNI is filtered | use a custom domain and enable Fragment |
 | TLS nodes don't work | client lacks Fragment or it's off | enable Fragment or switch client |
 | Connects but some sites fail | destination is behind Cloudflare and the ProxyIP is bad | set a healthy `proxyip` |
-| sing-box rule-set download errors | rule-set URL or jsDelivr access | verify the URLs, or connect first without those rules |
 | Preferred domains resolve wrongly | ISP DNS poisoning | use IPs in `ip1..ip13` (`cf_scan.py --use-ip`) |
 | Cloudflare `1101` / `Exceeded` | runtime error or plan limit | check `npx wrangler tail` and your plan limits |
 
