@@ -7,8 +7,8 @@ const API = "https://api.cloudflare.com/client/v4";
 const GH = "https://raw.githubusercontent.com/soroushse7o/Cloudflare-vless-trojan/";
 const VLESS_DIR = GH + "refs/heads/main/Vless_workers_pages/";
 const TROJAN_DIR = GH + "refs/heads/main/Trojan_workers_pages/";
-const PAGES_FILE = "_worker.js";          // Pages build: file name must start with "_"
-const WORKERS_FILE = "_worker-manual.js"; // Workers build: readable bilingual module (same logic as _worker.js)
+const PAGES_FILE = "_worker.js";         
+const WORKERS_FILE = "_worker.js"; // Workers build: readable bilingual module (same logic as _worker.js)
 
 const SOURCES = {
   vless: {
