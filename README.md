@@ -11,6 +11,7 @@
 
 [فارسی](#فارسی) · [English](#english)
 
+این پروژه ترجمه و نسخه‌ی بهینه‌شده برای کاربران ایرانی از yonggekkk/Cloudflare-vless-trojan (https://github.com/yonggekkk/Cloudflare-vless-trojan) است. تمام اعتبار کد اصلی متعلق به سازنده‌ی
 </div>
 
 ---
