@@ -1,4 +1,10 @@
 <div align="center">
+این پروژه ترجمه و نسخه‌ی بهینه‌شده برای کاربران ایرانی ازyonggekkk/Cloudflare-vless-trojan (https://github.com/yonggekkk/Cloudflare-vless-trojan) 
+تمام اعتبار کد اصلی متعلق به سازنده‌ی آن است.
+  
+This project is a translation and optimized version for Iranian users of yonggekkk/Cloudflare-vless-trojan (https://github.com/yonggekkk/Cloudflare-vless-trojan).
+All credit for the original code belongs to its author.
+
 
 # Cloudflare-vless-trojan
 
@@ -11,7 +17,6 @@
 
 [فارسی](#فارسی) · [English](#english)
 
-این پروژه ترجمه و نسخه‌ی بهینه‌شده برای کاربران ایرانی از yonggekkk/Cloudflare-vless-trojan (https://github.com/yonggekkk/Cloudflare-vless-trojan) است. تمام اعتبار کد اصلی متعلق به سازنده‌ی
 </div>
 
 ---
