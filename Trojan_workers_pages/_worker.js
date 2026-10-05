@@ -208,7 +208,7 @@ function buildNodes(cfg, host, tlsOnly) {
 
 function nodeLink(n, pswd, host) {
   const sec = n.tls ? `tls&sni=${host}` : "none";
-  return `${P}://${pswd}@${n.addr}:${n.port}?security=${sec}&fp=randomized&type=ws&host=${host}&path=%2F%3Fed%3D2560#${n.name}`;
+  return `${P}://${pswd}@${n.addr}:${n.port}?security=${sec}&fp=chrome&type=ws&host=${host}&path=%2F%3Fed%3D2560#${n.name}`;
 }
 
 function shareSub(nodes, pswd, host) {
@@ -385,7 +385,7 @@ function renderPage(cfg, host) {
   const isWorkers = host.includes("workers.dev");
   const cdn = cfg.cdnip || host;
   const wsLink = `${P}://${pswd}@${cdn}:8880?security=none&type=ws&host=${host}&path=%2F%3Fed%3D2560#${host}`;
-  const tlsLink = `${P}://${pswd}@${cdn}:8443?security=tls&type=ws&host=${host}&sni=${host}&fp=random&path=%2F%3Fed%3D2560#${host}`;
+  const tlsLink = `${P}://${pswd}@${cdn}:8443?security=tls&type=ws&host=${host}&sni=${host}&fp=chrome&path=%2F%3Fed%3D2560#${host}`;
   const base = `https://${host}/${pswd}`;
   const allNodes = buildNodes(cfg, host, false);
   const tlsNodes = buildNodes(cfg, host, true);
